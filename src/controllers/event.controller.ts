@@ -1,5 +1,7 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import { Request, Response } from 'express';
+import { postEvent } from '../services/event.service';
+import {EventInput,EventOutput,ApiResponse} from '../types/event.types';
 const prisma = new PrismaClient();
 
 /**
@@ -53,44 +55,28 @@ const prisma = new PrismaClient();
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-export const createEvent = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const eventData = req.body;
-    const currDate = new Date();
-    const startDate = new Date(eventData.startDate);
-    const endDate = new Date(eventData.endDate);
-    if(startDate>endDate){
-        res.status(400).json({
+export const createEvent = async (
+    req: Request<{}, {}, EventInput>,
+    res: Response<ApiResponse<EventOutput>>
+): Promise<void> => {
+    try {
+        const eventData = req.body;
+        const result = await postEvent(eventData);
+
+        if (!result.success) {
+            res.status(400).json(result);
+            return;
+        }
+
+        res.status(201).json(result);
+    } catch (error) {
+        console.error('Controller error:', error);
+        res.status(500).json({
             success: false,
-            message: "Event startDate cannot be after endDate",
+            message: "Internal server error",
+            error: error instanceof Error ? error.message : 'UNKNOWN_ERROR'
         });
-        return;
     }
-    let status : string = "UPCOMING";
-    if(startDate<=currDate && endDate>=currDate){
-        status = "ONGOING"
-    }
-    if(startDate>currDate){
-        status = "UPCOMING"
-    }
-    if(endDate<currDate){
-        status = "COMPLETED"
-    }
-    
-    const result = await prisma.event.create({
-        data: {...eventData,status : status,startDate:startDate.toISOString(),endDate:endDate.toISOString()}
-    });
-    
-    res.status(201).json({
-      success: true,
-      data: result,
-    });
-  } catch (error) {
-    res.status(400).json({
-      success: false,
-      error: error instanceof Error ? error.message : 'Event Creation failed',
-    });
-  }
 };
 
 /**

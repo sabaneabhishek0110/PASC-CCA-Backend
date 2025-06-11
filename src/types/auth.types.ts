@@ -64,3 +64,4 @@ export interface ITokenPayload {
   email: string;
   type: 'user' | 'admin';
 } 
+
