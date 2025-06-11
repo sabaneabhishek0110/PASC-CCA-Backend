@@ -1,7 +1,6 @@
 import { Prisma, PrismaClient } from '@prisma/client';
 import { Request, Response } from 'express';
 import { postEvent } from '../services/event.service';
-import {EventInput,EventOutput,ApiResponse} from '../types/event.types';
 const prisma = new PrismaClient();
 
 /**
@@ -47,34 +46,36 @@ const prisma = new PrismaClient();
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/AuthResponse'
+ *               $ref: '#/components/schemas/EventResponse'
  *       400:
  *         description: Invalid input
  *         content:
  *           application/json:
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
+ *       500:
+ *         description: Internal Server Error 
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
  */
-export const createEvent = async (
-    req: Request<{}, {}, EventInput>,
-    res: Response<ApiResponse<EventOutput>>
-): Promise<void> => {
+export const createEvent = async (req: Request,res: Response) => {
     try {
-        const eventData = req.body;
-        const result = await postEvent(eventData);
+        const result = await postEvent(req.body);
 
         if (!result.success) {
-            res.status(400).json(result);
-            return;
+            return res.status(400).json(result);
         }
 
-        res.status(201).json(result);
+        return res.status(201).json(result);
+
     } catch (error) {
         console.error('Controller error:', error);
-        res.status(500).json({
+        return res.status(500).json({
             success: false,
-            message: "Internal server error",
-            error: error instanceof Error ? error.message : 'UNKNOWN_ERROR'
+            message: 'Internal server error',
+            error: error instanceof Error ? error.message : 'Unexpected error'
         });
     }
 };

@@ -1,5 +1,3 @@
-// services/eventService.ts
-
 import { PrismaClient } from '@prisma/client';
 import { EventInput, EventResponse } from '../types/event.types';
 
@@ -7,44 +5,27 @@ const prisma = new PrismaClient();
 
 export const postEvent = async (eventData: EventInput): Promise<EventResponse> => {
     try {
-        const currDate = new Date();
         const startDate = new Date(eventData.startDate);
         const endDate = new Date(eventData.endDate);
+        const currentDate = new Date();
 
-        // Validate dates
         if (isNaN(startDate.getTime())) {
-            return {
-                success: false,
-                message: "Invalid start date format",
-                error: "START_DATE_INVALID"
-            };
+            throw new Error('Invalid start date');
         }
-
         if (isNaN(endDate.getTime())) {
-            return {
-                success: false,
-                message: "Invalid end date format",
-                error: "END_DATE_INVALID"
-            };
+            throw new Error('Invalid end date');
         }
-
         if (startDate > endDate) {
-            return {
-                success: false,
-                message: "Event cannot end before it starts",
-                error: "INVALID_DATE_RANGE"
-            };
+            throw new Error('Start date cannot be after end date');
         }
 
-        // Calculate status
         let status: 'UPCOMING' | 'ONGOING' | 'COMPLETED' = 'UPCOMING';
-        if (startDate <= currDate && endDate >= currDate) {
+        if (startDate <= currentDate && endDate >= currentDate) {
             status = 'ONGOING';
-        } else if (endDate < currDate) {
+        } else if (endDate < currentDate) {
             status = 'COMPLETED';
         }
 
-        // Create event in database
         const result = await prisma.event.create({
             data: {
                 ...eventData,
@@ -56,16 +37,16 @@ export const postEvent = async (eventData: EventInput): Promise<EventResponse> =
 
         return {
             success: true,
-            message: "Event created successfully",
+            message: 'Event created successfully',
             data: result
         };
 
     } catch (error) {
-        console.error('Event creation failed:', error);
+        console.error('Service error:', error);
         return {
             success: false,
-            message: "Failed to create event",
-            error: error instanceof Error ? error.message : 'DATABASE_ERROR'
+            message: 'Failed to create event',
+            error: error instanceof Error ? error.message : 'Unknown error'
         };
     }
 };
