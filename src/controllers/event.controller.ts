@@ -60,19 +60,20 @@ const prisma = new PrismaClient();
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-export const createEvent = async (req: Request,res: Response) => {
+export const createEvent = async (req: Request,res: Response) : Promise<void> => {
     try {
         const result = await postEvent(req.body);
 
         if (!result.success) {
-            return res.status(400).json(result);
+            res.status(400).json(result);
+            return
         }
 
-        return res.status(201).json(result);
+        res.status(201).json(result);
 
     } catch (error) {
         console.error('Controller error:', error);
-        return res.status(500).json({
+        res.status(500).json({
             success: false,
             message: 'Internal server error',
             error: error instanceof Error ? error.message : 'Unexpected error'

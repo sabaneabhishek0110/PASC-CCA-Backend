@@ -1,7 +1,4 @@
-import { Response } from 'express';
-
 export type EventStatus = 'UPCOMING' | 'ONGOING' | 'COMPLETED';
-
 
 export interface EventInput {
     title: string;
