@@ -29,9 +29,9 @@ const options: swaggerJsdoc.Options = {
             id: { type: 'integer' },
             name: { type: 'string' },
             email: { type: 'string', format: 'email' },
-            department: { 
+            department: {
               type: 'string',
-              enum: ['CE', 'IT', 'ENTC', 'ECE', 'AIDS']
+              enum: ['CE', 'IT', 'ENTC', 'ECE', 'AIDS'],
             },
             year: { type: 'integer' },
             passoutYear: { type: 'integer' },
@@ -70,12 +70,40 @@ const options: swaggerJsdoc.Options = {
           properties: {
             success: { type: 'boolean' },
             error: { type: 'string' },
+            message: { type: 'string' },
+          },
+        },
+        EventResponse: {
+          type: 'object',
+          properties: {
+            success: { type: 'boolean' },
+            message: { type: 'string' },
+            data: {
+              type: 'object',
+              properties: {
+                id: { type: 'integer' },
+                title: { type: 'string' },
+                description: { type: 'string' },
+                location: { type: 'string' },
+                credits: { type: 'number' },
+                numDays: { type: 'integer' },
+                capacity: { type: 'integer' },
+                status: {
+                  type: 'string',
+                  enum: ['UPCOMING', 'ONGOING', 'COMPLETED'],
+                },
+                startDate: { type: 'string', format: 'date-time' },
+                endDate: { type: 'string', format: 'date-time' },
+                createdAt: { type: 'string', format: 'date-time' },
+                updatedAt: { type: 'string', format: 'date-time' },
+              },
+            },
           },
         },
       },
     },
   },
-  apis: ['./src/controllers/*.ts'], // Path to the API docs
+  apis: ['./src/controllers/*.ts'], 
 };
 
-export const swaggerSpec = swaggerJsdoc(options); 
+export const swaggerSpec = swaggerJsdoc(options);

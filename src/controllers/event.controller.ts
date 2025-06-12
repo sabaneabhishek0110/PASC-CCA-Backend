@@ -5,41 +5,18 @@ const prisma = new PrismaClient();
 
 /**
  * @swagger
- * /api/event/:
+ * /api/events:
  *   post:
- *     summary: Create New event
- *     tags: [Event Creation]
+ *     summary: Create a new event
+ *     tags: [Events]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             required:
- *               - title
- *               - description
- *               - startDate
- *               - endDate
- *               - location
- *               - credits
- *               - numDays
- *             properties:
- *               title:
- *                 type: string
- *               description:
- *                 type: string
- *               startDate:
- *                 type: string
- *                 format: date-time
- *               endDate:
- *                 type: string
- *                 format: date-time
- *               location:
- *                 type: string
- *               credits:
- *                 type: float
- *               numDays : 
- *                 type: int
+ *             $ref: '#/components/schemas/EventInput'
  *     responses:
  *       201:
  *         description: Event created successfully
@@ -48,17 +25,13 @@ const prisma = new PrismaClient();
  *             schema:
  *               $ref: '#/components/schemas/EventResponse'
  *       400:
- *         description: Invalid input
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *         description: Bad request
+ *         schema:
+ *           $ref: '#/components/schemas/ErrorResponse'
+ *       401:
+ *         description: Unauthorized
  *       500:
- *         description: Internal Server Error 
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/ErrorResponse'
+ *         description: Internal server error
  */
 export const createEvent = async (req: Request,res: Response) : Promise<void> => {
     try {
