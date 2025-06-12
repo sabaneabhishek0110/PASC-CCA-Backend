@@ -19,6 +19,10 @@ export const postEvent = async (eventData: EventInput): Promise<EventResponse> =
             throw new Error('Start date cannot be after end date');
         }
 
+        if(eventData.capacity<=0){
+            throw new Error('Capacity should be greater than zero');
+        }
+
         let status : 'UPCOMING' | 'ONGOING' | 'COMPLETED' = 'UPCOMING';
         if (startDate <= currentDate && endDate >= currentDate) {
             status = 'ONGOING';

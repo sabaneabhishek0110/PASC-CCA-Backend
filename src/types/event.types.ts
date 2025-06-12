@@ -6,6 +6,7 @@ export interface EventInput {
     location: string;
     credits: number;
     numDays: number;
+    capacity:number;
     startDate: string | Date; 
     endDate: string | Date;
 }
@@ -17,6 +18,7 @@ export interface EventData {
     location: string;
     credits: number;
     numDays: number;
+    capacity:number;
     status: EventStatus;
     startDate: Date;
     endDate: Date;
@@ -27,7 +29,7 @@ export interface EventData {
 export interface ApiResponse<T = any> {
     success: boolean;
     message?: string;
-    data?: T;
+    data?: T|T[];
     error?: string;
 }
 
